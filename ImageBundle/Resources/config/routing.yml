@@ -1,0 +1,9 @@
+bold_image_accueil:
+    pattern: /{id}/accueil
+    defaults: { _controller: BoldImageBundle:Image:index}
+
+
+# A J A X
+bold_image_ajax_ajouter:
+    pattern: /{id}/ajouter
+    defaults: { _controller: BoldImageBundle:Image:ajouter}

@@ -1,0 +1,137 @@
+{% extends "BoldPrezBundle:Back:layout.html.twig" %}
+
+{% block stylesheets %}
+<link rel="stylesheet" href="{{asset('css/jquery.fileupload-ui.css')}}">
+{% endblock %}
+
+{% block javascripts %}
+<script src="{{asset('js/vendor/jquery.ui.widget.js')}}"></script>
+<script src="{{asset('js/jquery.iframe-transport.js')}}"></script>
+<script src="{{asset('js/jquery.fileupload.js')}}"></script>
+<script src="http://blueimp.github.com/JavaScript-Templates/tmpl.min.js"></script>
+<script src="http://blueimp.github.com/JavaScript-Load-Image/load-image.min.js"></script>
+<script src="http://blueimp.github.com/JavaScript-Canvas-to-Blob/canvas-to-blob.min.js"></script>
+{% endblock %}
+
+{% block breadcrumb %}
+<li><span class="divider">/</span> <a href="{{path('prez_admin_projet_accueil', {'id': projet.id})}}">{{projet.nom}}</a></li>
+<li class="active"><span class="divider">/</span> Images</li>
+ {% endblock %}
+
+{% block content %}
+    <div class="page-header">
+        <h1>Ajouter des images</h1>
+    </div>
+    <br>
+    <!-- The file upload form used as target for the file upload widget -->
+    <form id="fileupload" action="{{path('bold_image_ajax_ajouter', {'id': projet.id})}}" method="POST" enctype="multipart/form-data">
+        <!-- The fileupload-buttonbar contains buttons to add/delete files and start/cancel the upload -->
+        <div class="row fileupload-buttonbar">
+            <div class="span7">
+                <!-- The fileinput-button span is used to style the file input field as button -->
+                <span class="btn btn-success fileinput-button">
+                    <i class="icon-plus icon-white"></i>
+                    <span>Add files...</span>
+                    <input type="file" name="files[]" multiple>
+                </span>
+                <button type="submit" class="btn btn-primary start">
+                    <i class="icon-upload icon-white"></i>
+                    <span>Start upload</span>
+                </button>
+                <button type="reset" class="btn btn-warning cancel">
+                    <i class="icon-ban-circle icon-white"></i>
+                    <span>Cancel upload</span>
+                </button>
+                <button type="button" class="btn btn-danger delete">
+                    <i class="icon-trash icon-white"></i>
+                    <span>Delete</span>
+                </button>
+                <input type="checkbox" class="toggle">
+            </div>
+            <div class="span5">
+                <!-- The global progress bar -->
+                <div class="progress progress-success progress-striped active fade">
+                    <div class="bar" style="width:0%;"></div>
+                </div>
+            </div>
+        </div>
+        <!-- The loading indicator is shown during image processing -->
+        <div class="fileupload-loading"></div>
+        <br>
+        <!-- The table listing the files available for upload/download -->
+        <table class="table table-striped"><tbody class="files" data-toggle="modal-gallery" data-target="#modal-gallery"></tbody></table>
+    </form>
+
+    <div id="plop"></div>
+
+<script>
+$(function () {
+    $('#fileupload').fileupload({
+        dataType: 'json',
+        done: function (e, data) {
+            $.each(data.result, function (index, file) {
+                $('#plop').append($('<p/>').text(file.name));
+            });
+        },
+        uploadTemplate: function (o) {
+            var rows = $();
+            $.each(o.files, function (index, file) {
+                var row = $('<tr class="template-upload fade">' +
+                    '<td class="preview"><span class="fade"></span></td>' +
+                    '<td class="name"></td>' +
+                    '<td class="size"></td>' +
+                    (file.error ? '<td class="error" colspan="2"></td>' :
+                            '<td><div class="progress">' +
+                                '<div class="bar" style="width:0%;"></div></div></td>' +
+                                '<td class="start"><button>Start</button></td>'
+                    ) + '<td class="cancel"><button>Cancel</button></td></tr>');
+                row.find('.name').text(file.name);
+                row.find('.size').text(o.formatFileSize(file.size));
+                if (file.error) {
+                    row.find('.error').text(
+                        locale.fileupload.errors[file.error] || file.error
+                    );
+                }
+                rows = rows.add(row);
+            });
+            return rows;
+        },
+        downloadTemplate: function (o) {
+            var rows = $();
+            $.each(o.files, function (index, file) {
+                var row = $('<tr class="template-download fade">' +
+                    (file.error ? '<td></td><td class="name"></td>' +
+                        '<td class="size"></td><td class="error" colspan="2"></td>' :
+                            '<td class="preview"></td>' +
+                                '<td class="name"><a></a></td>' +
+                                '<td class="size"></td><td colspan="2"></td>'
+                    ) + '<td class="delete"><button>Delete</button> ' +
+                        '<input type="checkbox" name="delete" value="1"></td></tr>');
+                row.find('.size').text(o.formatFileSize(file.size));
+                if (file.error) {
+                    row.find('.name').text(file.name);
+                    row.find('.error').text(
+                        locale.fileupload.errors[file.error] || file.error
+                    );
+                } else {
+                    row.find('.name a').text(file.name);
+                    if (file.thumbnail_url) {
+                        row.find('.preview').append('<a><img></a>')
+                            .find('img').prop('src', file.thumbnail_url);
+                        row.find('a').prop('rel', 'gallery');
+                    }
+                    row.find('a').prop('href', file.url);
+                    row.find('.delete button')
+                        .attr('data-type', file.delete_type)
+                        .attr('data-url', file.delete_url);
+                }
+                rows = rows.add(row);
+            });
+            return rows;
+        }
+    });
+
+});
+</script>
+ {% endblock %}
+
