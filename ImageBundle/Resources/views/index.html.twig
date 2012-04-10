@@ -47,6 +47,7 @@
             </div>
         </div>
         <div class="fileupload-loading"></div>
+        <table class="table table-striped"><tbody class="files" data-toggle="modal-gallery" data-target="#modal-gallery"></tbody></table>
         <br>
 
     </form>
@@ -198,6 +199,7 @@ $(function () {
  {% endblock %}
 
 {% block javascripts %}
+<script src="{{asset('js/vendor/jquery.ui.widget.js')}}"></script>
 <script src="http://blueimp.github.com/JavaScript-Templates/tmpl.min.js"></script>
 <script src="http://blueimp.github.com/JavaScript-Load-Image/load-image.min.js"></script>
 <script src="http://blueimp.github.com/JavaScript-Canvas-to-Blob/canvas-to-blob.min.js"></script>
