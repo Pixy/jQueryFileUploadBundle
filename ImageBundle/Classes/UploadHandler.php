@@ -260,7 +260,7 @@ class UploadHandler
     }
 
     protected function handle_file_upload($uploaded_file, $name, $size, $type, $error) {
-        $file = new \stdClass();
+        $file = new stdClass();
         $file->name = $this->trim_file_name($name, $type);
         $file->size = intval($size);
         $file->type = $type;
@@ -383,7 +383,7 @@ class UploadHandler
         } else {
             header('Content-type: text/plain');
         }
-        return $json;
+        echo $json;
     }
 
     public function delete() {
