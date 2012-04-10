@@ -57,7 +57,7 @@ class ImageController extends Controller
                 if ($request->getMethod() === 'DELETE') {
                     $upload_handler->delete();
                 } else {
-                    $rep = $upload_handler->post();
+                    $upload_handler->post();
                 }
                 break;
             case 'DELETE':
