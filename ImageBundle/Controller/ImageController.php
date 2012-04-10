@@ -44,7 +44,7 @@ class ImageController extends Controller
         $upload_handler = new UploadHandler();
         $request = $this->get('request');
 
-        $rep = json_encode('');
+        $response = new Response();
 
         switch ($request->getMethod()) {
             case 'OPTIONS':
@@ -54,7 +54,7 @@ class ImageController extends Controller
                 $upload_handler->get();
                 break;
             case 'POST':
-                if ($request->getMethod() === 'DELETE') {
+                if ($request->get('_method') === 'DELETE') {
                     $upload_handler->delete();
                 } else {
                     $upload_handler->post();
@@ -67,11 +67,12 @@ class ImageController extends Controller
                 header('HTTP/1.1 405 Method Not Allowed');
         }
 
-        $json = $rep;
-
-        $response = new Response();
-        $response->headers->set('Content-Type', 'application/json');
-        $response->setContent($json);
+        $response->headers->set('Pragma', 'no-cache');
+        $response->headers->set('Cache-Control', 'no-store, no-cache, must-revalidate');
+        $response->headers->set('Content-Disposition', 'inline; filename="files.json"');
+        $response->headers->set('Access-Control-Allow-Origin', '*');
+        $response->headers->set('Access-Control-Allow-Methods', 'OPTIONS, HEAD, GET, POST, PUT, DELETE');
+        $response->headers->set('Access-Control-Allow-Headers', 'X-File-Name, X-File-Type, X-File-Size');
         return $response;
     }
 }

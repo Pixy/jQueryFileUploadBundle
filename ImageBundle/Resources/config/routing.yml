@@ -7,3 +7,5 @@ bold_image_accueil:
 bold_image_ajax_ajouter:
     pattern: /{id}/ajouter
     defaults: { _controller: BoldImageBundle:Image:ajouter}
+    requirements:
+        _method:  GET|POST|HEAD|PUT|DELETE

@@ -4,14 +4,7 @@
 <link rel="stylesheet" href="{{asset('css/jquery.fileupload-ui.css')}}">
 {% endblock %}
 
-{% block javascripts %}
-<script src="{{asset('js/vendor/jquery.ui.widget.js')}}"></script>
-<script src="{{asset('js/jquery.iframe-transport.js')}}"></script>
-<script src="{{asset('js/jquery.fileupload.js')}}"></script>
-<script src="http://blueimp.github.com/JavaScript-Templates/tmpl.min.js"></script>
-<script src="http://blueimp.github.com/JavaScript-Load-Image/load-image.min.js"></script>
-<script src="http://blueimp.github.com/JavaScript-Canvas-to-Blob/canvas-to-blob.min.js"></script>
-{% endblock %}
+
 
 {% block breadcrumb %}
 <li><span class="divider">/</span> <a href="{{path('prez_admin_projet_accueil', {'id': projet.id})}}">{{projet.nom}}</a></li>
@@ -55,8 +48,35 @@
         </div>
         <div class="fileupload-loading"></div>
         <br>
-        <table class="table table-striped"><tbody class="files" data-toggle="modal-gallery" data-target="#modal-gallery"></tbody></table>
+
     </form>
+
+    <!-- modal-gallery is the modal dialog used for the image gallery -->
+<div id="modal-gallery" class="modal modal-gallery hide fade">
+    <div class="modal-header">
+        <a class="close" data-dismiss="modal">&times;</a>
+        <h3 class="modal-title"></h3>
+    </div>
+    <div class="modal-body"><div class="modal-image"></div></div>
+    <div class="modal-footer">
+        <a class="btn modal-download" target="_blank">
+            <i class="icon-download"></i>
+            <span>Download</span>
+        </a>
+        <a class="btn btn-success modal-play modal-slideshow" data-slideshow="5000">
+            <i class="icon-play icon-white"></i>
+            <span>Slideshow</span>
+        </a>
+        <a class="btn btn-info modal-prev">
+            <i class="icon-arrow-left icon-white"></i>
+            <span>Previous</span>
+        </a>
+        <a class="btn btn-primary modal-next">
+            <span>Next</span>
+            <i class="icon-arrow-right icon-white"></i>
+        </a>
+    </div>
+</div>
 
 
 {% raw %}
@@ -139,41 +159,18 @@ $(function () {
         )
     );
 
-    if (window.location.hostname === 'blueimp.github.com') {
-        // Demo settings:
-        $('#fileupload').fileupload('option', {
-            url: '//jquery-file-upload.appspot.com/',
-            maxFileSize: 5000000,
-            acceptFileTypes: /(\.|\/)(gif|jpe?g|png)$/i,
-            resizeMaxWidth: 1920,
-            resizeMaxHeight: 1200
-        });
-        // Upload server status check for browsers with CORS support:
-        if ($.support.cors) {
-            $.ajax({
-                url: '//jquery-file-upload.appspot.com/',
-                type: 'HEAD'
-            }).fail(function () {
-                $('<span class="alert alert-error"/>')
-                    .text('Upload server currently unavailable - ' +
-                            new Date())
-                    .appendTo('#fileupload');
-            });
-        }
-    } else {
-        // Load existing files:
-        $('#fileupload').each(function () {
-            var that = this;
-            $.getJSON(this.action, function (result) {
-                if (result && result.length) {
-                    $(that).fileupload('option', 'done')
-                        .call(that, null, {result: result});
-                }
-            });
-        });
-    }
-
 });
 </script>
  {% endblock %}
 
+{% block javascripts %}
+<script src="http://blueimp.github.com/JavaScript-Templates/tmpl.min.js"></script>
+<script src="http://blueimp.github.com/JavaScript-Load-Image/load-image.min.js"></script>
+<script src="http://blueimp.github.com/JavaScript-Canvas-to-Blob/canvas-to-blob.min.js"></script>
+<script src="http://blueimp.github.com/Bootstrap-Image-Gallery/js/bootstrap-image-gallery.min.js"></script>
+<script src="{{asset('js/jquery.iframe-transport.js')}}"></script>
+<script src="{{asset('js/jquery.fileupload.js')}}"></script>
+<script src="{{asset('js/jquery.fileupload-ip.js')}}"></script>
+<script src="{{asset('js/jquery.fileupload-ui.js')}}"></script>
+<script src="{{asset('js/locale.js')}}"></script>
+{% endblock %}
