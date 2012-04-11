@@ -15,8 +15,9 @@ namespace Bold\ImageBundle\Classes;
 class UploadHandler
 {
     protected $options;
+    protected $script;
 
-    function __construct($options=null) {
+    function __construct($options=null, $script = null) {
         $this->options = array(
             'script_url' => $this->getFullUrl().'/',
             'upload_dir' => dirname($_SERVER['SCRIPT_FILENAME']).'/files/',
@@ -59,6 +60,17 @@ class UploadHandler
         if ($options) {
             $this->options = array_replace_recursive($this->options, $options);
         }
+        if($script) {
+            $this->script = $script;
+        }
+    }
+
+    public function getScript() {
+        return $this->script;
+    }
+
+    public function setScript($script) {
+        $this->script = $script;
     }
 
     protected function getFullUrl() {
@@ -72,7 +84,7 @@ class UploadHandler
     }
 
     protected function set_file_delete_url($file) {
-        $file->delete_url = $this->options['script_url']
+        $file->delete_url = $this->script
             .'?file='.rawurlencode($file->name);
         $file->delete_type = $this->options['delete_type'];
         if ($file->delete_type !== 'DELETE') {

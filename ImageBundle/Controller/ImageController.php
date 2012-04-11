@@ -41,10 +41,10 @@ class ImageController extends Controller
             throw $this->createNotFoundException('Le projet[id='.$id.'] n\'existe pas.');
         }
         $client = $projet->getClient();
-        $upload_handler = new UploadHandler();
         $request = $this->get('request');
 
-        $response = new Response();
+        $upload_handler = new UploadHandler(null, $this->generateUrl('bold_image_ajax_ajouter', array('id' => $id)));
+
 
         switch ($request->getMethod()) {
             case 'OPTIONS':
@@ -67,6 +67,7 @@ class ImageController extends Controller
                 header('HTTP/1.1 405 Method Not Allowed');
         }
 
+        $response = new Response();
         $response->headers->set('Pragma', 'no-cache');
         $response->headers->set('Cache-Control', 'no-store, no-cache, must-revalidate');
         $response->headers->set('Content-Disposition', 'inline; filename="files.json"');
