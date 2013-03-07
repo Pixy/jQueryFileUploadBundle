@@ -17,9 +17,28 @@ Download files from the basic jQuery Plugin here : [https://github.com/blueimp/j
 
 And puts the files in your **/web** folder.
 
-Download the **JQueryFileUploadBundle** and put it in your **/src** folder (**the root is /JQuery**).
+Download the **JQueryFileUploadBundle** and put it in your **/src** folder ( **the root is /JQuery** ).
 
 ### Installation ###
+
+Open the **app/AppKernel.php** file and add the ligne in the **registerBundles()** function
+```php
+public function registerBundles()
+{
+    $bundles = array(
+        // ...
+        new JQuery\FileUploadBundle\JQueryFileUploadBundle(),
+    );
+}
+```
+
+Adding the routes to the Main routing file ( **app/config/routing.yml** ) :
+```yml
+jquery_fileupload_handler: # rename it if you want
+    resource: "@JQueryFileUploadBundle/Resources/config/routing.yml"
+    prefix:   /upload-handler # Change it if you want
+```
+
 This Bundle is configured to be used with a Layout. In top of the **Resources/views/index.html.twig**, replace "YourPersonalLayout" by your layout, if you want to.
 
 There are 3 blocks :
