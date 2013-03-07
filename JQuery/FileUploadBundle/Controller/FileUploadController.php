@@ -1,51 +1,36 @@
 <?php
 
-namespace Bold\ImageBundle\Controller;
+namespace JQuery\FileUploadBundle\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Response;
 
 
-use Bold\ImageBundle\Classes\UploadHandler;
+use JQuery\FileUploadBundle\Classes\UploadHandler;
 
 
-class ImageController extends Controller
+class FileUploadController extends Controller
 {
 
-    public function indexAction($id)
+    /**
+     * Render the page
+     */
+    public function indexAction()
     {
-        $em = $this->getDoctrine()->getEntityManager();
-
-        if(!$projet = $em->getRepository('BoldPrezBundle:Projet')->find($id)) {
-            throw $this->createNotFoundException('Le projet[id='.$id.'] n\'existe pas.');
-        }
-        $client = $projet->getClient();
-        $projets = $client->getProjets();
-
-        return $this->render('BoldImageBundle::index.html.twig', array(
-            'client' => $client,
-            'projet' => $projet,
-            'projets' => $projets,
-        ));
+        return $this->render('JQueryFileUploadBundle::index.html.twig');
     }
 
 
-    /**
-     *  Ajouter une image
-     * @param integer $id
-     */
-    public function ajouterAction($id) {
-        $em = $this->getDoctrine()->getEntityManager();
 
-        if(!$projet = $em->getRepository('BoldPrezBundle:Projet')->find($id)) {
-            throw $this->createNotFoundException('Le projet[id='.$id.'] n\'existe pas.');
-        }
-        $client = $projet->getClient();
+    public function addAction() {
+        // Get the response
         $request = $this->get('request');
 
-        $upload_handler = new UploadHandler(null, $this->generateUrl('bold_image_ajax_ajouter', array('id' => $id)));
+        // Init the Upload Handler, see Classes/UploadHandler.php for options
+        // The second paramter is needed for Symfony to know where to redirect the answer
+        $upload_handler = new UploadHandler(null, $this->generateUrl('jquery_fileupload_add'));
 
-
+        // Switch action, do the method
         switch ($request->getMethod()) {
             case 'OPTIONS':
                 break;
@@ -67,6 +52,7 @@ class ImageController extends Controller
                 header('HTTP/1.1 405 Method Not Allowed');
         }
 
+        // Call the Response and add Headers needed 
         $response = new Response();
         $response->headers->set('Pragma', 'no-cache');
         $response->headers->set('Cache-Control', 'no-store, no-cache, must-revalidate');

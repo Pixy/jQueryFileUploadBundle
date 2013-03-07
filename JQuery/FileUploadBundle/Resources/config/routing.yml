@@ -1,0 +1,12 @@
+# Call the main page
+jquery_fileupload_index:
+    pattern: /upload
+    defaults: { _controller: JQueryFileUpload:FileUpload:index}
+
+
+# Do the AddAction, ajax way
+jquery_fileupload_add:
+    pattern: /add
+    defaults: { _controller: JQueryFileUpload:FileUpload:ajouter}
+    requirements:
+        _method:  GET|POST|HEAD|PUT|DELETE

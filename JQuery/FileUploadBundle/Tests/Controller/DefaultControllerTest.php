@@ -1,6 +1,6 @@
 <?php
 
-namespace Bold\ImageBundle\Tests\Controller;
+namespace JQuery\FileUploadBundle\Tests\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 

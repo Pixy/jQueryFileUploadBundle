@@ -10,7 +10,7 @@
  * http://www.opensource.org/licenses/MIT
  */
 
-namespace Bold\ImageBundle\Classes;
+namespace JQuery\FileUploadBundle\Classes;
 
 class UploadHandler
 {
