@@ -47,7 +47,7 @@ $upload_handler = new UploadHandler(null, $this->generateUrl('jquery_fileupload_
 
 Check the **JQuery\FileUploadBundle\Classes\UploadHandler.php** for more options.
 
-Handle uploaded imagew with the database
+Handle uploaded image with the database
 ===
 Coming soon...
 
