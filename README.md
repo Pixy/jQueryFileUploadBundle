@@ -17,7 +17,7 @@ Download files from the basic jQuery Plugin here : [https://github.com/blueimp/j
 
 And puts the files in your **/web** folder.
 
-Download the **JQueryFileUploadBundle** and put it in your **/src** folder (**the root is /JQuery**, not UploadBundle).
+Download the **JQueryFileUploadBundle** and put it in your **/src** folder (**the root is /JQuery**).
 
 ### Installation ###
 This Bundle is configured to be used with a Layout. In top of the **Resources/views/index.html.twig**, replace "YourPersonalLayout" by your layout, if you want to.
