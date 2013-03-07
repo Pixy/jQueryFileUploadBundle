@@ -17,11 +17,11 @@ class UploadHandler
     protected $options;
     protected $script;
 
-    function __construct($options=null, $script = null) {
+    function __construct($options=null, $script = null, $subDir = null) {
         $this->options = array(
             'script_url' => $this->getFullUrl().'/',
-            'upload_dir' => dirname($_SERVER['SCRIPT_FILENAME']).'/files/',
-            'upload_url' => $this->getFullUrl().'/files/',
+            'upload_dir' => dirname($_SERVER['SCRIPT_FILENAME']) . $subDir . '/',
+            'upload_url' => $this->getFullUrl() . $subDir . '/',
             'param_name' => 'files',
             // Set the following option to 'POST', if your server does not support
             // DELETE requests. This is a parameter sent to the client:
@@ -42,18 +42,18 @@ class UploadHandler
                 // their own upload directories:
                 /*
                 'large' => array(
-                    'upload_dir' => dirname($_SERVER['SCRIPT_FILENAME']).'/files/',
-                    'upload_url' => $this->getFullUrl().'/files/',
+                    'upload_dir' => dirname($_SERVER['SCRIPT_FILENAME']).'/large/' . $subDir . '/',
+                    'upload_url' => $this->getFullUrl().'/large/' . $subDir . '/',
                     'max_width' => 1920,
                     'max_height' => 1200,
                     'jpeg_quality' => 95
                 ),
                 */
                 'thumbnail' => array(
-                    'upload_dir' => dirname($_SERVER['SCRIPT_FILENAME']).'/thumbnails/',
-                    'upload_url' => $this->getFullUrl().'/thumbnails/',
-                    'max_width' => 80,
-                    'max_height' => 80
+                    'upload_dir' => dirname($_SERVER['SCRIPT_FILENAME']).'/thumbnails/' . $subDir . '/',
+                    'upload_url' => $this->getFullUrl().'/thumbnails/' . $subDir . '/',
+                    'max_width' => 100,
+                    'max_height' => 100
                 )
             )
         );
@@ -74,16 +74,26 @@ class UploadHandler
     }
 
     protected function getFullUrl() {
-      	return
-    		(isset($_SERVER['HTTPS']) ? 'https://' : 'http://').
-    		(isset($_SERVER['REMOTE_USER']) ? $_SERVER['REMOTE_USER'].'@' : '').
-    		(isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : ($_SERVER['SERVER_NAME'].
-    		(isset($_SERVER['HTTPS']) && $_SERVER['SERVER_PORT'] === 443 ||
-    		$_SERVER['SERVER_PORT'] === 80 ? '' : ':'.$_SERVER['SERVER_PORT']))).
-    		substr($_SERVER['SCRIPT_NAME'],0, strrpos($_SERVER['SCRIPT_NAME'], '/'));
+        return
+            (isset($_SERVER['HTTPS']) ? 'https://' : 'http://').
+            (isset($_SERVER['REMOTE_USER']) ? $_SERVER['REMOTE_USER'].'@' : '').
+            (isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : ($_SERVER['SERVER_NAME'].
+            (isset($_SERVER['HTTPS']) && $_SERVER['SERVER_PORT'] === 443 ||
+            $_SERVER['SERVER_PORT'] === 80 ? '' : ':'.$_SERVER['SERVER_PORT']))).
+            substr($_SERVER['SCRIPT_NAME'],0, strrpos($_SERVER['SCRIPT_NAME'], '/'));
     }
 
     protected function set_file_delete_url($file) {
+        /*
+        $file->delete_url = $this->options['script_url']
+            .'?file='.rawurlencode($file->name);
+        $file->delete_type = $this->options['delete_type'];
+        if ($file->delete_type !== 'DELETE') {
+            $file->delete_url .= '&_method=DELETE';
+        }
+        */
+
+        // Script SYMFONY
         $file->delete_url = $this->script
             .'?file='.rawurlencode($file->name);
         $file->delete_type = $this->options['delete_type'];
@@ -243,32 +253,32 @@ class UploadHandler
     }
 
     protected function orient_image($file_path) {
-      	$exif = @exif_read_data($file_path);
+        $exif = @exif_read_data($file_path);
         if ($exif === false) {
             return false;
         }
-      	$orientation = intval(@$exif['Orientation']);
-      	if (!in_array($orientation, array(3, 6, 8))) {
-      	    return false;
-      	}
-      	$image = @imagecreatefromjpeg($file_path);
-      	switch ($orientation) {
-        	  case 3:
-          	    $image = @imagerotate($image, 180, 0);
-          	    break;
-        	  case 6:
-          	    $image = @imagerotate($image, 270, 0);
-          	    break;
-        	  case 8:
-          	    $image = @imagerotate($image, 90, 0);
-          	    break;
-          	default:
-          	    return false;
-      	}
-      	$success = imagejpeg($image, $file_path);
-      	// Free up memory (imagedestroy does not delete files):
-      	@imagedestroy($image);
-      	return $success;
+        $orientation = intval(@$exif['Orientation']);
+        if (!in_array($orientation, array(3, 6, 8))) {
+            return false;
+        }
+        $image = @imagecreatefromjpeg($file_path);
+        switch ($orientation) {
+              case 3:
+                $image = @imagerotate($image, 180, 0);
+                break;
+              case 6:
+                $image = @imagerotate($image, 270, 0);
+                break;
+              case 8:
+                $image = @imagerotate($image, 90, 0);
+                break;
+            default:
+                return false;
+        }
+        $success = imagejpeg($image, $file_path);
+        // Free up memory (imagedestroy does not delete files):
+        @imagedestroy($image);
+        return $success;
     }
 
     protected function handle_file_upload($uploaded_file, $name, $size, $type, $error) {
@@ -303,9 +313,9 @@ class UploadHandler
             }
             $file_size = filesize($file_path);
             if ($file_size === $file->size) {
-            	if ($this->options['orient_image']) {
-            		$this->orient_image($file_path);
-            	}
+                if ($this->options['orient_image']) {
+                    $this->orient_image($file_path);
+                }
                 $file->url = $this->options['upload_url'].rawurlencode($file->name);
                 foreach($this->options['image_versions'] as $version => $options) {
                     if ($this->create_scaled_image($file->name, $options)) {
@@ -396,12 +406,16 @@ class UploadHandler
             header('Content-type: text/plain');
         }
         echo $json;
+        return $json;
     }
 
     public function delete() {
         $file_name = isset($_REQUEST['file']) ?
             basename(stripslashes($_REQUEST['file'])) : null;
         $file_path = $this->options['upload_dir'].$file_name;
+
+        $deletedFiles = $this->options['upload_url'].$file_name;
+
         $success = is_file($file_path) && $file_name[0] !== '.' && unlink($file_path);
         if ($success) {
             foreach($this->options['image_versions'] as $version => $options) {
@@ -413,6 +427,7 @@ class UploadHandler
         }
         header('Content-type: application/json');
         echo json_encode($success);
+        return $deletedFiles;
     }
 
 }
